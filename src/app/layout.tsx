@@ -1,3 +1,4 @@
+"use client";
 import RootProvider from "@/components/provider";
 import './globals.css'
 import Navbar from '@/components/navbar'
