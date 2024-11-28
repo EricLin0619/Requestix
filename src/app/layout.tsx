@@ -9,11 +9,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="">
-        <RootProvider>
-          <Navbar />
-          {children}
-        </RootProvider>
+      <body className="overflow-x-hidden">
+        <div className="flex flex-col max-w-[80vw] mx-auto h-dvh pt-4">
+          <RootProvider>
+            <Navbar />
+            {children}
+          </RootProvider>
+        </div>
       </body>
     </html>
   );

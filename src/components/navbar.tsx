@@ -4,11 +4,13 @@ function Navbar() {
   return (
     <div className="navbar bg-white text-black rounded-lg shadow-xl">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">NFT Market</a>
+        <a className="btn btn-ghost text-xl">Ticket Center</a>
       </div>
       <div className="flex-none">
-        <ul className="menu menu-horizontal px-1">
-          <ConnectButton/>
+        <ul className="menu menu-horizontal px-1 relative">
+          <div className="z-10">
+            <ConnectButton/>
+          </div>
           {/* <li>
             <details>
               <summary>Parent</summary>

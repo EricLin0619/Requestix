@@ -5,9 +5,9 @@ import {
   useAccount,
 } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { WalletClient } from "viem";
 import { createRequest } from "@/requestModule/createRequest";
+import TicketCard from "@/components/ticketCard";
 
 export default function Home() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
@@ -17,7 +17,16 @@ export default function Home() {
 
   return (
     <div>
-      <button
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-10 mt-10 justify-items-center items-center">
+        <TicketCard />
+        <TicketCard />
+        <TicketCard />
+        <TicketCard />
+        <TicketCard />
+        <TicketCard />
+      </div>
+      {/* <button
+        className="btn btn-primary"
         onClick={() =>
           createRequest(
             payeeIdentity as `0x${string}`,
@@ -35,7 +44,7 @@ export default function Home() {
         }
       >
         Create Request
-      </button>
+      </button> */}
     </div>
   );
 }
