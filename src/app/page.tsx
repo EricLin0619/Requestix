@@ -8,6 +8,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { WalletClient } from "viem";
 import { createRequest } from "@/requestModule/createRequest";
 import TicketCard from "@/components/ticketCard";
+import retriveRequest from "@/requestModule/retriveRequest";
 
 export default function Home() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
@@ -25,6 +26,9 @@ export default function Home() {
         <TicketCard />
         <TicketCard />
       </div>
+      <button className="btn btn-primary" onClick={() => retriveRequest("sepolia", payeeIdentity as `0x${string}`)}>
+        Retrive Request
+      </button>
       {/* <button
         className="btn btn-primary"
         onClick={() =>

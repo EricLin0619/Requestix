@@ -139,7 +139,7 @@ function Page() {
 
             <div className="form-control">
               <label className="block">
-                <span className="text-gray-700 font-medium mb-2 block">Price (¥)</span>
+                <span className="text-gray-700 font-medium mb-2 block">Price (USD)</span>
                 <input
                   type="number"
                   name="price"
