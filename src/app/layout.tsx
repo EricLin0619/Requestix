@@ -1,4 +1,4 @@
-"use client";
+
 import RootProvider from "@/components/provider";
 import './globals.css'
 import Navbar from '@/components/navbar'
@@ -11,7 +11,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="overflow-x-hidden">
-        <div className="flex flex-col max-w-[80vw] mx-auto h-dvh pt-4">
+        <div className="flex flex-col max-w-[80vw] mx-auto h-dvh pt-4 ">
           <RootProvider>
             <Navbar />
             {children}

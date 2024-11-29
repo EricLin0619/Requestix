@@ -81,7 +81,7 @@ function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-12 px-4 sm:px-6 lg:px-8">
       {/* {showError && (
         <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">
           <p>請填寫所有必填欄位</p>
@@ -125,8 +125,10 @@ function Page() {
                 <input
                   type="date"
                   name="date"
+                  min={new Date().toISOString().split('T')[0]}
                   value={formData.date}
                   onChange={handleInputChange}
+                  lang="en"
                   className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors [color-scheme:light] ${
                     errors.date ? 'border-red-500' : ''
                   }`}

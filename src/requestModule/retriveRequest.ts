@@ -13,6 +13,7 @@ async function retriveRequest(chainName: string, identityAddress: string) {
   });
   const requestDatas = requests.map((request) => request.getData());
   console.log(requestDatas);
+  return requestDatas;
 }
 
 export default retriveRequest;

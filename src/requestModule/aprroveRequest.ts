@@ -6,10 +6,10 @@ import { hasSufficientFunds } from "@requestnetwork/payment-processor";
 import { approveErc20, hasErc20Approval } from "@requestnetwork/payment-processor";
 import { getPaymentNetworkExtension } from "@requestnetwork/payment-detection";
 
-async function approveRequest(requestData: Types.IRequestData, payerAddress: `0x${string}`, storageChain: string) {
+async function approveRequest(requestData: Types.IRequestData, payerAddress: `0x${string}`, gatewayChain: string) {
   const requestClient = new RequestNetwork({
     nodeConnectionConfig: {
-      baseURL: storageChains.get(storageChain)!.gateway,
+      baseURL: storageChains.get(gatewayChain)!.gateway,
     },
   });
   const provider = useEthersV5Provider();

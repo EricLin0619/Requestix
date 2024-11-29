@@ -1,6 +1,7 @@
 "use client";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import FlashText from "@/components/flashText";
+import Link from "next/link";
 
 function Navbar() {
   return (
@@ -33,17 +34,19 @@ function Navbar() {
             className="dropdown-content menu bg-white text-black rounded-box z-[1] w-52 p-2 shadow mt-4"
           >
             <li>
-              <a href="/">Buy Tickets</a>
+              <Link href="/">Buy Tickets</Link>
             </li>
             <li>
-              <a href="/myTickets">My Tickets</a>
+              <Link href="/myTickets">My Tickets</Link>
             </li>
             <li>
-              <a href="/create">Create Event</a>
+              <Link href="/create">Create Event</Link>
             </li>
           </ul>
         </div>
-        <FlashText />
+        <Link href="/">
+          <FlashText />
+        </Link>
       </div>
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1 relative">
