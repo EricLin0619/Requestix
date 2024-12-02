@@ -20,7 +20,7 @@ function MyTicketCard() {
         <p>price: 10000</p>
       </div>
       <div className="w-full h-[36px] flex items-center px-4 pb-2">
-        <Countdown endTime={1732927074} />
+        <Countdown endTime={1733027074} />
         <button className="ml-auto w-[100px] h-[33px] bg-[#9B59B6] text-white rounded-[4px] 
           hover:bg-[#8E44AD] active:bg-[#6C3483] active:transform active:scale-95 
           transition-all duration-200 ease-in-out">

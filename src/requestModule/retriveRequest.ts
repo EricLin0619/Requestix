@@ -1,9 +1,9 @@
 import { RequestNetwork, Types } from "@requestnetwork/request-client.js";
-
-async function retriveRequest(chainName: string, identityAddress: string) {
+import { storageChains } from "@/config/storageChains";
+async function retriveRequest(gatewayChain: string, identityAddress: string) {
   const requestClient = new RequestNetwork({
     nodeConnectionConfig: {
-      baseURL: "https://sepolia.gateway.request.network/",
+      baseURL: storageChains.get(gatewayChain)!.gateway,
     },
   });
 

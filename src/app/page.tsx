@@ -17,7 +17,7 @@ export default function Home() {
   const [requestDatas, setRequestDatas] = useState<Types.IRequestData[]>([]);
 
   useEffect(() => {
-    retriveRequest("gnosis", payeeIdentity as `0x${string}`).then((data) => {
+    retriveRequest("sepolia", payeeIdentity as `0x${string}`).then((data) => {
       console.log(data);
       setRequestDatas(data);
     });
@@ -36,7 +36,7 @@ export default function Home() {
       <PayButton
         requestData={requestDatas[5]}
         payerAddress={payerIdentity}
-        gatewayChain="gnosis"
+        gatewayChain="sepolia"
       />
       {/* <button
         className="btn btn-primary"

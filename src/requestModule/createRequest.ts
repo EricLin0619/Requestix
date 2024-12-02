@@ -11,7 +11,7 @@ import { Web3SignatureProvider } from "@requestnetwork/web3-signature";
 export async function createRequest(
   payeeIdentity: `0x${string}`,
   payerIdentity: `0x${string}`,
-  chainName: string,
+  gatewayChain: string,
   currencyName: string,
   txContent: object,
   walletClient: WalletClient
@@ -19,7 +19,7 @@ export async function createRequest(
   const web3SignatureProvider = new Web3SignatureProvider(walletClient)
   const requestClient = new RequestNetwork({
     nodeConnectionConfig: {
-      baseURL: storageChains.get(chainName)!.gateway,
+      baseURL: storageChains.get(gatewayChain)!.gateway,
     },
     signatureProvider: web3SignatureProvider,
   });
