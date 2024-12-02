@@ -3,55 +3,42 @@ pragma solidity ^0.8.0;
 
 contract EventRegistry {
     struct Event {
-        string name;        // 活動名稱
-        uint256 price;      // 預期票價(僅供參考)
-        uint256 timestamp;  // 活動時間
-        string location;    // 活動地點
-        address organizer;  // 活動主辦方地址
-        uint256 maxRegistrations; // 最大註冊人數
-        uint256 registeredCount;  // 已註冊人數
-        bool isActive;      // 活動是否進行中
+        string metadata;    // IPFS hash storing event details (name, price, location, times)
+        address organizer;  // event organizer address
+        uint256 maxRegistrations; // max registrations
+        uint256 registeredCount;  // registered count
+        bool isActive;      // event is active
     }
 
-    // 儲存活動信息
+    // store event information
     mapping(uint256 => Event) public events;
-    // 儲存每個活動的註冊用戶
+    // store each event's registered users
     mapping(uint256 => mapping(address => bool)) public registeredUsers;
     uint256 public eventCount;
 
-    // 活動創建事件
+    // event created event
     event EventCreated(
         uint256 indexed eventId,
-        string name,
-        uint256 price,
-        uint256 timestamp,
-        string location,
+        string metadata,
         address organizer
     );
 
-    // 用戶註冊事件
+    // user registered event
     event UserRegistered(
         uint256 indexed eventId,
         address indexed user
     );
 
-    // 創建新活動
+    // create new event
     function createEvent(
-        string memory _name,
-        uint256 _price,
-        uint256 _timestamp,
-        string memory _location,
+        string memory _metadata,
         uint256 _maxRegistrations
     ) public {
-        require(_timestamp > block.timestamp, "Event time must be in the future");
         require(_maxRegistrations > 0, "Max registrations must be greater than 0");
-
+        
         eventCount++;
         events[eventCount] = Event({
-            name: _name,
-            price: _price,
-            timestamp: _timestamp,
-            location: _location,
+            metadata: _metadata,
             organizer: msg.sender,
             maxRegistrations: _maxRegistrations,
             registeredCount: 0,
@@ -60,20 +47,16 @@ contract EventRegistry {
 
         emit EventCreated(
             eventCount,
-            _name,
-            _price,
-            _timestamp,
-            _location,
+            _metadata,
             msg.sender
         );
     }
 
-    // 註冊購買權
+    // register for event
     function registerForEvent(uint256 _eventId) public {
         Event storage _event = events[_eventId];
         
         require(_event.isActive, "Event does not exist or has ended");
-        require(_event.timestamp > block.timestamp, "Event has ended");
         require(_event.registeredCount < _event.maxRegistrations, "Registration limit reached");
         require(!registeredUsers[_eventId][msg.sender], "You have already registered for this event");
 
@@ -83,12 +66,12 @@ contract EventRegistry {
         emit UserRegistered(_eventId, msg.sender);
     }
 
-    // 檢查用戶是否已註冊
+    // check if user is registered
     function isRegistered(uint256 _eventId, address _user) public view returns (bool) {
         return registeredUsers[_eventId][_user];
     }
 
-    // 取消用戶註冊（只能由活動主辦方或用戶本人操作）
+    // cancel user registration (only by event organizer or user himself)
     function cancelRegistration(uint256 _eventId, address _user) public {
         Event storage _event = events[_eventId];
         require(msg.sender == _user || msg.sender == _event.organizer, "No permission to perform this action");
@@ -98,12 +81,9 @@ contract EventRegistry {
         _event.registeredCount--;
     }
 
-    // 查看活動詳情
+    // view event details
     function getEvent(uint256 _eventId) public view returns (
-        string memory name,
-        uint256 price,
-        uint256 timestamp,
-        string memory location,
+        string memory metadata,
         address organizer,
         uint256 maxRegistrations,
         uint256 registeredCount,
@@ -111,10 +91,7 @@ contract EventRegistry {
     ) {
         Event storage _event = events[_eventId];
         return (
-            _event.name,
-            _event.price,
-            _event.timestamp,
-            _event.location,
+            _event.metadata,
             _event.organizer,
             _event.maxRegistrations,
             _event.registeredCount,
@@ -122,7 +99,7 @@ contract EventRegistry {
         );
     }
 
-    // 獲取活動已註冊人數
+    // get registered count
     function getRegisteredCount(uint256 _eventId) public view returns (uint256) {
         return events[_eventId].registeredCount;
     }

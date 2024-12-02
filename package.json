@@ -14,6 +14,8 @@
     "@requestnetwork/payment-processor": "0.43.0",
     "@requestnetwork/request-client.js": "0.45.0",
     "@requestnetwork/web3-signature": "0.4.41",
+    "@thirdweb-dev/react": "^4.9.4",
+    "@thirdweb-dev/storage": "^2.0.15",
     "@types/node": "20.1.0",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",

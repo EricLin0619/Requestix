@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import "@rainbow-me/rainbowkit/styles.css";
-
+import { useStorageUpload } from '@thirdweb-dev/react';
 interface FormData {
   eventName: string;
   date: string;
@@ -10,6 +10,8 @@ interface FormData {
 }
 
 function Page() {
+  const [isUploading, setIsUploading] = useState(false);
+  const { mutateAsync: upload } = useStorageUpload();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     eventName: '',
@@ -19,6 +21,7 @@ function Page() {
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [showError, setShowError] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,6 +75,7 @@ function Page() {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -79,6 +83,25 @@ function Page() {
       reader.readAsDataURL(file);
     }
   };
+
+  async function uploadImage() {
+    if (selectedFile) {
+      // 上傳到 IPFS
+      try {
+        setIsUploading(true);
+        const cid = await upload({data: [selectedFile]});
+        console.log('Uploaded to IPFS with CID:', cid);
+        setFormData(prev => ({
+          ...prev,
+          imageIpfsCid: cid
+        }));
+      } catch (error) {
+        console.error('Error uploading to IPFS:', error);
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen pt-12 px-4 sm:px-6 lg:px-8">
@@ -244,6 +267,9 @@ function Page() {
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 active:scale-95 transition-all duration-200 ease-in-out"
             >
               Create Event
+            </button>
+            <button className='btn btn-primary' onClick={uploadImage}>
+              uploadImage
             </button>
           </div>
         </div>
