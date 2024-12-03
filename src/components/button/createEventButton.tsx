@@ -6,6 +6,7 @@ import { createEventOnChain } from "@/service/contractService";
 
 function CreateEventButton({
   inputCheck,
+  setLoading,
   eventName,
   location,
   price,
@@ -17,6 +18,7 @@ function CreateEventButton({
   image,
 }: {
   inputCheck: () => boolean;
+  setLoading: (loading: boolean) => void;
   eventName: string;
   location: string;
   price: string;
@@ -62,6 +64,7 @@ function CreateEventButton({
       return;
     }
     try {
+      setLoading(true);
       setStatus('uploading');
       const cid = await upLoadMetaData();
       
@@ -71,9 +74,11 @@ function CreateEventButton({
       setStatus('confirming');
       // 交易確認完成後
       setStatus('idle');
+      setLoading(false);
     } catch (error) {
       console.error("Error creating event:", error);
       setStatus('idle');
+      setLoading(false);
     }
   }
 

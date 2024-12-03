@@ -32,6 +32,7 @@ function Page() {
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [showError, setShowError] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -122,8 +123,11 @@ function Page() {
   return (
     <div className="min-h-screen pt-12 px-4 sm:px-6 lg:px-8 mb-6">
       {isLoading && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="loader">Loading...</div>
+        <div className="fixed inset-0 bg-gray-800/75 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="flex flex-col items-center gap-3 p-4">
+            <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+            <p className="text-white font-medium">Creating event...</p>
+          </div>
         </div>
       )}
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
@@ -358,6 +362,7 @@ function Page() {
           <div className="mt-8 flex justify-end">
             <CreateEventButton
               inputCheck={inputCheck}
+              setLoading={setIsLoading}
               eventName={formData.eventName}
               location={formData.location}
               price={formData.price}

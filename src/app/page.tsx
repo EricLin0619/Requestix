@@ -5,23 +5,29 @@ import { WalletClient } from "viem";
 import TicketCard from "@/components/ticketCard";
 import retriveRequest from "@/requestModule/retriveRequest";
 import PayButton from "@/components/button/payButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Types } from "@requestnetwork/request-client.js";
 import { getAllEvents } from "@/service/contractService";
+import { useQuery } from '@tanstack/react-query';
 
 export default function Home() {
   const { address } = useAccount();
   const payeeIdentity = address;
   const payerIdentity = "0x519145B771a6e450461af89980e5C17Ff6Fd8A92";
   const [requestDatas, setRequestDatas] = useState<Types.IRequestData[]>([]);
-  const [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    getAllEvents().then((data) => {
-      console.log(data);
-      setEvents(data as []);
-    });
-  }, []);
+  const { data: events = [], isLoading } = useQuery<any[]>({
+    queryKey: ['events'],
+    queryFn: getAllEvents,
+    staleTime: 5 * 60 * 1000, // 數據在 5 分鐘內被認為是新鮮的
+    cacheTime: 30 * 60 * 1000, // 緩存保留 30 分鐘
+  });
+
+  if (isLoading) return (
+    <div className="flex justify-center items-center h-screen">
+      <span className="loading loading-ring text-black w-[100px] h-[100px]"></span>
+    </div>
+  )
 
   return (
     <div>

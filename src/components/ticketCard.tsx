@@ -1,5 +1,5 @@
 import Countdown from "./countDown";
-import { convertIpfsUrl } from "../util";
+import { convertIpfsUrl, calculateDaysLeft } from "../util";
 import { useState, useEffect } from "react";
 
 // ticket status: for sale, end, open for registration
@@ -40,6 +40,7 @@ function TicketCard({
 
   useEffect(() => {
     fetchIpfsData(metadataUrl).then((data) => {
+      console.log(data);
       setEventName(data.eventName);
       setLocation(data.location);
       setPrice(data.price);
@@ -56,15 +57,54 @@ function TicketCard({
     return date.toLocaleDateString(); // 使用本地日期格式
   }
 
+  function getEventStatus(): { status: string; color: string } {
+    const now = Math.floor(Date.now() / 1000); // 當前時間（秒）
+    
+    if (now < saleStartDate) {
+      return { 
+        status: "Upcoming", 
+        color: "#FF9900" // 橙色
+      };
+    } else if (now >= saleStartDate && now <= saleEndDate) {
+      return { 
+        status: "For Sale", 
+        color: "#2bae0a" // 綠色
+      };
+    } else {
+      return { 
+        status: "Ended", 
+        color: "#FF0000" // 紅色
+      };
+    }
+  }
+
+  const eventStatus = getEventStatus();
+
   return (
     <div className="w-[100%] h-[380px] rounded-[8px] shadow-[0px_4px_12px_9px_rgba(0,_0,_0,_0.1)]">
       <div className="w-full h-[36px] flex items-center pl-4">
-        <div className="w-[25%] h-[20px] bg-[#2bae0a] flex items-center justify-center rounded-[4px] text-sm mr-1">
-          For Sale
+        <div 
+          className="w-[25%] h-[20px] flex items-center justify-center rounded-[4px] text-sm mr-1 text-white"
+          style={{ backgroundColor: eventStatus.color }}
+        >
+          {eventStatus.status}
         </div>
-        <div className="text-sm bg-[#2bae0a] bg-opacity-15 rounded-[4px] px-2">
-          <span className="text-[#2bae0a]">Three Days left</span>
-        </div>
+        {eventStatus.status === "For Sale" && (
+          <div className="text-sm bg-opacity-15 rounded-[4px] px-2"
+               style={{ backgroundColor: `${eventStatus.color}20` }}>
+            <span style={{ color: eventStatus.color }}>
+              {calculateDaysLeft(saleEndDate) === 1 ? "1 day left" : `${calculateDaysLeft(saleEndDate)} Days left`}
+            </span>
+          </div>
+        )}
+        {eventStatus.status === "Upcoming" && (
+          <div className="text-sm bg-opacity-15 rounded-[4px] px-2"
+               style={{ backgroundColor: `${eventStatus.color}20` }}>
+            <span style={{ color: eventStatus.color }}>
+              {calculateDaysLeft(saleStartDate) === 1 ? "1 day until sale" : `${calculateDaysLeft(saleStartDate)} Days until sale`}
+            </span>
+          </div>
+        )}
       </div>
       <img
         src={imageUrl ? convertIpfsUrl(imageUrl) : "/event.jpg"}
@@ -78,13 +118,21 @@ function TicketCard({
         <p>price: {price}</p>
       </div>
       <div className="w-full h-[36px] flex items-center px-4 pb-2">
-        <Countdown endTime={1734127074} />
+        {eventStatus.status === "For Sale" && saleEndDate > 0 && (
+          <Countdown endTime={saleEndDate} />
+        )}
+        {eventStatus.status === "Upcoming" && saleStartDate > 0 && (
+          <Countdown endTime={saleStartDate} />
+        )}
         <button
-          className="ml-auto w-[100px] h-[33px] bg-[#2bae0a] text-white rounded-[4px] 
-          hover:bg-[#239108] active:bg-[#1c7206] active:transform active:scale-95 
-          transition-all duration-200 ease-in-out"
+          className={`ml-auto w-[100px] h-[33px] text-white rounded-[4px] 
+          transition-all duration-200 ease-in-out
+          ${eventStatus.status === "For Sale" 
+            ? "bg-[#2bae0a] hover:bg-[#239108] active:bg-[#1c7206] active:transform active:scale-95"
+            : "bg-gray-400 cursor-not-allowed"}`}
+          disabled={eventStatus.status !== "For Sale"}
         >
-          Buy now
+          {eventStatus.status === "For Sale" ? "Buy now" : "Buy now"}
         </button>
       </div>
     </div>
