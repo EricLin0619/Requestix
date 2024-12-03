@@ -2,11 +2,19 @@
 import { useState } from 'react';
 import "@rainbow-me/rainbowkit/styles.css";
 import { useStorageUpload } from '@thirdweb-dev/react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import CreateEventButton from '@/components/button/createEventButton';
+
 interface FormData {
   eventName: string;
-  date: string;
   location: string;
   price: string;
+  maxTickets: string;
+  ticketSaleStart: string | number;
+  eventStartTime: string | number;
+  eventEndTime: string | number;
+  ticketSaleEnd: string | number;
 }
 
 function Page() {
@@ -15,9 +23,13 @@ function Page() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     eventName: '',
-    date: '',
     location: '',
-    price: ''
+    price: '',
+    maxTickets: '',
+    ticketSaleStart: 0,
+    eventStartTime: 0,
+    eventEndTime: 0,
+    ticketSaleEnd: 0
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [showError, setShowError] = useState(false);
@@ -25,11 +37,20 @@ function Page() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // 當用戶開始輸入時清除該欄位的錯誤
+    
+    if (['ticketSaleStart', 'ticketSaleEnd', 'eventStartTime', 'eventEndTime'].includes(name)) {
+      const timestamp = new Date(value).getTime() / 1000;
+      setFormData(prev => ({
+        ...prev,
+        [name]: timestamp
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+
     if (errors[name as keyof FormData]) {
       setErrors(prev => ({
         ...prev,
@@ -44,14 +65,26 @@ function Page() {
     if (!formData.eventName.trim()) {
       newErrors.eventName = 'Please enter the event name';
     }
-    if (!formData.date) {
-      newErrors.date = 'Please select a date';
-    }
     if (!formData.location.trim()) {
       newErrors.location = 'Please enter the location';
     }
     if (!formData.price) {
       newErrors.price = 'Please enter the price';
+    }
+    if (!formData.ticketSaleStart) {
+      newErrors.ticketSaleStart = 'Please select the ticket sale start time';
+    }
+    if (!formData.eventStartTime) {
+      newErrors.eventStartTime = 'Please select the event start time';
+    }
+    if (!formData.eventEndTime) {
+      newErrors.eventEndTime = 'Please select the event end time';
+    }
+    if (!formData.ticketSaleEnd) {
+      newErrors.ticketSaleEnd = 'Please select the ticket sale end time';
+    }
+    if (!formData.maxTickets) {
+      newErrors.maxTickets = 'Please enter the number of tickets for sale';
     }
 
     setErrors(newErrors);
@@ -63,13 +96,12 @@ function Page() {
     
     if (!isValid) {
       setShowError(true);
-      // 3秒後自動隱藏錯誤提示
       setTimeout(() => setShowError(false), 3000);
-      return;
+      return false;
     }
 
-    // TODO: 處理表單提交邏輯
     console.log('Form submitted:', formData);
+    return true;
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +118,6 @@ function Page() {
 
   async function uploadImage() {
     if (selectedFile) {
-      // 上傳到 IPFS
       try {
         setIsUploading(true);
         const cid = await upload({data: [selectedFile]});
@@ -103,14 +134,13 @@ function Page() {
     }
   }
 
+  const timestampToDateTimeString = (timestamp: number) => {
+    if (!timestamp) return '';
+    return new Date(timestamp * 1000).toISOString().slice(0, 16);
+  };
+
   return (
-    <div className="min-h-screen pt-12 px-4 sm:px-6 lg:px-8">
-      {/* {showError && (
-        <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">
-          <p>請填寫所有必填欄位</p>
-        </div>
-      )} */}
-      
+    <div className="min-h-screen pt-12 px-4 sm:px-6 lg:px-8 mb-6">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
         <div className="mb-10">
           <h1 className="text-4xl font-bold text-center text-gray-800">
@@ -144,26 +174,6 @@ function Page() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="form-control">
               <label className="block">
-                <span className="text-gray-700 font-medium mb-2 block">Date</span>
-                <input
-                  type="date"
-                  name="date"
-                  min={new Date().toISOString().split('T')[0]}
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  lang="en"
-                  className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors [color-scheme:light] ${
-                    errors.date ? 'border-red-500' : ''
-                  }`}
-                />
-                {errors.date && (
-                  <p className="text-red-500 text-sm mt-1">{errors.date}</p>
-                )}
-              </label>
-            </div>
-
-            <div className="form-control">
-              <label className="block">
                 <span className="text-gray-700 font-medium mb-2 block">Price (USD)</span>
                 <input
                   type="number"
@@ -180,25 +190,124 @@ function Page() {
                 )}
               </label>
             </div>
+            <div className="form-control">
+              <label className="block">
+                <span className="text-gray-700 font-medium mb-2 block">Tickets for sale</span>
+                <input
+                  type="number"
+                  name="maxTickets"
+                  value={formData.maxTickets}
+                  onChange={handleInputChange}
+                  placeholder="1000"
+                  className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors ${
+                    errors.maxTickets ? 'border-red-500' : ''
+                  }`}
+                />
+                {errors.maxTickets && (
+                  <p className="text-red-500 text-sm mt-1">{errors.maxTickets}</p>
+                )}
+              </label>
+            </div>
           </div>
+          <div className="form-control">
+              <label className="block">
+                <span className="text-gray-700 font-medium mb-2 block">Location</span>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  placeholder="Tokyo Dome"
+                  className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors ${
+                    errors.location ? 'border-red-500' : ''
+                  }`}
+                />
+                {errors.location && (
+                  <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+                )}
+              </label>
+            </div>
 
-          <div className="form-control w-full">
-            <label className="block">
-              <span className="text-gray-700 font-medium mb-2 block">Location</span>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="Tokyo Dome"
-                className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors ${
-                  errors.location ? 'border-red-500' : ''
-                }`}
-              />
-              {errors.location && (
-                <p className="text-red-500 text-sm mt-1">{errors.location}</p>
-              )}
-            </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="form-control">
+              <label className="block">
+                <span className="text-gray-700 font-medium mb-2 block">Ticket Sale Start</span>
+                <input
+                  type="datetime-local"
+                  name="ticketSaleStart"
+                  value={timestampToDateTimeString(formData.ticketSaleStart as number)}
+                  onChange={handleInputChange}
+                  min={new Date().toISOString().slice(0, 16)}
+                  className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors [color-scheme:light] ${
+                    errors.ticketSaleStart ? 'border-red-500' : ''
+                  }`}
+                />
+                {errors.ticketSaleStart && (
+                  <p className="text-red-500 text-sm mt-1">{errors.ticketSaleStart}</p>
+                )}
+              </label>
+            </div>
+
+            <div className="form-control">
+              <label className="block">
+                <span className="text-gray-700 font-medium mb-2 block">Ticket Sale End</span>
+                <input
+                  type="datetime-local"
+                  name="ticketSaleEnd"
+                  value={timestampToDateTimeString(formData.ticketSaleEnd as number)}
+                  onChange={handleInputChange}
+                  min={timestampToDateTimeString(formData.ticketSaleStart as number)}
+                  className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors [color-scheme:light] ${
+                    errors.ticketSaleEnd ? 'border-red-500' : ''
+                  }`}
+                />
+                {errors.ticketSaleEnd && (
+                  <p className="text-red-500 text-sm mt-1">{errors.ticketSaleEnd}</p>
+                )}
+              </label>
+            </div>
+          </div>
+          
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="form-control">
+              <label className="block">
+                <span className="text-gray-700 font-medium mb-2 block">Event Start Time</span>
+                <input
+                  type="datetime-local"
+                  name="eventStartTime"
+                  value={timestampToDateTimeString(formData.eventStartTime as number)}
+                  onChange={handleInputChange}
+                  min={new Date().toISOString().slice(0, 16)}
+                  className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors [color-scheme:light] ${
+                    errors.eventStartTime ? 'border-red-500' : ''
+                  }`}
+                />
+                {errors.eventStartTime && (
+                  <p className="text-red-500 text-sm mt-1">{errors.eventStartTime}</p>
+                )}
+              </label>
+            </div>
+
+            <div className="form-control">
+              <label className="block">
+                <span className="text-gray-700 font-medium mb-2 block">Event End Time</span>
+                <input
+                  type="datetime-local"
+                  name="eventEndTime"
+                  value={timestampToDateTimeString(formData.eventEndTime as number)}
+                  onChange={handleInputChange}
+                  lang='en'
+                  min={timestampToDateTimeString(formData.eventStartTime as number)}
+                  className={`text-black input input-bordered w-full bg-white hover:border-blue-500 focus:border-blue-500 transition-colors [color-scheme:light] ${
+                    errors.eventEndTime ? 'border-red-500' : ''
+                  }`}
+                />
+                {errors.eventEndTime && (
+                  <p className="text-red-500 text-sm mt-1">{errors.eventEndTime}</p>
+                )}
+              </label>
+            </div>
           </div>
 
           <div className="form-control w-full">
@@ -262,15 +371,18 @@ function Page() {
           </div>
 
           <div className="mt-8 flex justify-end">
-            <button 
-              onClick={handleSubmit}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 active:scale-95 transition-all duration-200 ease-in-out"
-            >
-              Create Event
-            </button>
-            <button className='btn btn-primary' onClick={uploadImage}>
-              uploadImage
-            </button>
+            <CreateEventButton
+              handleSubmit={handleSubmit}
+              eventName={formData.eventName}
+              location={formData.location}
+              price={formData.price}
+              maxRegistrations={Number(formData.maxTickets)}
+              startDate={formData.eventStartTime as number}
+              endDate={formData.eventEndTime as number}
+              saleStartDate={formData.ticketSaleStart as number}
+              saleEndDate={formData.ticketSaleEnd as number}
+              image={selectedFile}
+            />
           </div>
         </div>
       </div>

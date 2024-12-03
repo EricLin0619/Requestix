@@ -16,7 +16,7 @@ export default function RootProvider({ children }: RootProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThirdwebProvider
-        clientId={"482b934d10599d46f13e52972ea433e8"}
+        clientId={process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID}
         activeChain="sepolia"
       >
         <WagmiConfig config={wagmiConfig}>
@@ -27,9 +27,6 @@ export default function RootProvider({ children }: RootProviderProps) {
       </ThirdwebProvider>
     </QueryClientProvider>
   );
-  // 3W9kBFInN2krrginMmFu5XTZur2r4uTMQWj6zx5xtZtgEm10oE6BI6VuV34Z7jj5FQDa9QExyNdNmBp8Kxebcw
-  // 482b934d10599d46f13e52972ea433e8
-  // https://ipfs.io/ipfs/QmNpqxuDv6XueLi7HTDT2EqkxiQ9Us3KM7X8HUyCsDnUdC/0
-  // https://ipfs.io/ipfs/QmZcH4YvBVVRJtdn4RdbaqgspFU8gH6P9vomDpBVpAL3u4/997
-  // https://ipfs.io/ipfs/QmeFYxu1eK4TfzDmrBt9JY1cXuDhMgEQ8PSR8RBswFLjnv/yoasobi.jpg
+  // api_key: 3W9kBFInN2krrginMmFu5XTZur2r4uTMQWj6zx5xtZtgEm10oE6BI6VuV34Z7jj5FQDa9QExyNdNmBp8Kxebcw
+  // https://ipfs.io/ipfs/QmRnrqzZ1hPqo9T6YH3TYMypX9CCHH2NapcRJrXnnt1dY1/0
 }

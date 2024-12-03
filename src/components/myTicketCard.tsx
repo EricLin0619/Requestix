@@ -9,7 +9,7 @@ function MyTicketCard() {
         <div className="px-2 h-[20px] bg-[#8E44AD] flex items-center justify-center rounded-[4px] text-sm mr-1">Pay before 2024-11-28</div>
       </div>
       <img
-        src="/yoasobi.jpg"
+        src="/event.jpg"
         alt="yoasobi"
         className="w-[100%] h-[150px] object-cover"
       />
