@@ -7,47 +7,45 @@ import retriveRequest from "@/requestModule/retriveRequest";
 import PayButton from "@/components/button/payButton";
 import { useEffect, useState } from "react";
 import { Types } from "@requestnetwork/request-client.js";
-import { useStorageUpload } from "@thirdweb-dev/react";
+import { getAllEvents } from "@/service/contractService";
 
 export default function Home() {
-  const { data: walletClient, isError, isLoading } = useWalletClient();
   const { address } = useAccount();
   const payeeIdentity = address;
   const payerIdentity = "0x519145B771a6e450461af89980e5C17Ff6Fd8A92";
   const [requestDatas, setRequestDatas] = useState<Types.IRequestData[]>([]);
-  const { mutateAsync: upload } = useStorageUpload();
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    retriveRequest("sepolia", payeeIdentity as `0x${string}`).then((data) => {
+    getAllEvents().then((data) => {
       console.log(data);
-      setRequestDatas(data);
+      setEvents(data as []);
     });
   }, []);
-
-  async function uploadData() {
-    const dataToUpload = [{
-      name: "test",
-      price: 100,
-      location: "test",
-    }];
-    const uris = await upload({ data: dataToUpload });
-    console.log(uris);
-  }
 
   return (
     <div>
       <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-x-10 gap-y-10 mt-10 justify-items-center items-center">
-        <TicketCard />
-        <TicketCard />
-        <TicketCard />
-        <TicketCard />
-        <TicketCard />
-        <TicketCard />
+        {events.map((event, index) => {
+          const ipfsUrl = event[0];
+          const organizer = event[1];
+          const maxRegistrations = event[2];
+          const registeredCount = event[3];
+          const isActive = event[4];
+          const eventId = index + 1;
+          return (
+            <TicketCard
+              key={index}
+              metadataUrl={ipfsUrl}
+              organizer={organizer}
+              maxRegistrations={maxRegistrations}
+              registeredCount={registeredCount}
+              isActive={isActive}
+              eventId={eventId}
+            />
+          );
+        })}
       </div>
-      <button onClick={uploadData} className="btn btn-primary">
-        uploadTest
-      </button>
-
       {/* <PayButton
         requestData={requestDatas[5]}
         payerAddress={payerIdentity}

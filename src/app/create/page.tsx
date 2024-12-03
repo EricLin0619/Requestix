@@ -1,8 +1,6 @@
 "use client";
 import { useState } from 'react';
 import "@rainbow-me/rainbowkit/styles.css";
-import { useStorageUpload } from '@thirdweb-dev/react';
-import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import CreateEventButton from '@/components/button/createEventButton';
 
@@ -18,8 +16,8 @@ interface FormData {
 }
 
 function Page() {
-  const [isUploading, setIsUploading] = useState(false);
-  const { mutateAsync: upload } = useStorageUpload();
+  // submmit loading
+  const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     eventName: '',
@@ -91,7 +89,7 @@ function Page() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const inputCheck = () => {
     const isValid = validateForm();
     
     if (!isValid) {
@@ -116,24 +114,6 @@ function Page() {
     }
   };
 
-  async function uploadImage() {
-    if (selectedFile) {
-      try {
-        setIsUploading(true);
-        const cid = await upload({data: [selectedFile]});
-        console.log('Uploaded to IPFS with CID:', cid);
-        setFormData(prev => ({
-          ...prev,
-          imageIpfsCid: cid
-        }));
-      } catch (error) {
-        console.error('Error uploading to IPFS:', error);
-      } finally {
-        setIsUploading(false);
-      }
-    }
-  }
-
   const timestampToDateTimeString = (timestamp: number) => {
     if (!timestamp) return '';
     return new Date(timestamp * 1000).toISOString().slice(0, 16);
@@ -141,6 +121,11 @@ function Page() {
 
   return (
     <div className="min-h-screen pt-12 px-4 sm:px-6 lg:px-8 mb-6">
+      {isLoading && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="loader">Loading...</div>
+        </div>
+      )}
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
         <div className="mb-10">
           <h1 className="text-4xl font-bold text-center text-gray-800">
@@ -372,7 +357,7 @@ function Page() {
 
           <div className="mt-8 flex justify-end">
             <CreateEventButton
-              handleSubmit={handleSubmit}
+              inputCheck={inputCheck}
               eventName={formData.eventName}
               location={formData.location}
               price={formData.price}

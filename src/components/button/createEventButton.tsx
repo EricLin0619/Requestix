@@ -2,10 +2,10 @@ import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { useStorageUpload } from "@thirdweb-dev/react";
 import ABI from "@/contracts/ABI.json";
 import { useState } from "react";
-import { createEventOnChain } from "@/service/createEvent";
+import { createEventOnChain } from "@/service/contractService";
 
 function CreateEventButton({
-  handleSubmit,
+  inputCheck,
   eventName,
   location,
   price,
@@ -16,7 +16,7 @@ function CreateEventButton({
   saleEndDate,
   image,
 }: {
-  handleSubmit: () => boolean;
+  inputCheck: () => boolean;
   eventName: string;
   location: string;
   price: string;
@@ -29,6 +29,7 @@ function CreateEventButton({
 }) {
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
   const { mutateAsync: upload } = useStorageUpload();
+  const [status, setStatus] = useState<'idle' | 'uploading' | 'creating' | 'confirming'>('idle');
 
   async function upLoadMetaData() {
     let imageCid: string[] | null = null;
@@ -57,20 +58,31 @@ function CreateEventButton({
   }
 
   async function handleCreateEvent() {
-    if(!handleSubmit()) {
-      return
+    if (!inputCheck()) {
+      return;
     }
     try {
+      setStatus('uploading');
       const cid = await upLoadMetaData();
+      
+      setStatus('creating');
       await createEventOnChain(cid[0], maxRegistrations);
+      
+      setStatus('confirming');
+      // 交易確認完成後
+      setStatus('idle');
     } catch (error) {
       console.error("Error creating event:", error);
+      setStatus('idle');
     }
   }
 
   return (
-    <button className="btn btn-primary" onClick={handleCreateEvent}>
-      Create Event
+    <button className="btn btn-primary" onClick={handleCreateEvent} disabled={status !== 'idle'}>
+      {status === 'uploading' && "Uploading to IPFS..."}
+      {status === 'creating' && "Creating Event..."}
+      {status === 'confirming' && "Confirming Transaction..."}
+      {status === 'idle' && "Create Event"}
     </button>
   );
 }
