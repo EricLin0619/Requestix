@@ -2,7 +2,10 @@ import { useEthersV5Provider } from "@/hooks/ethers-v5-provider";
 import { useEthersV5Signer } from "@/hooks/ethers-v5-signer";
 import { storageChains } from "@/config/storageChains";
 import { Types, RequestNetwork } from "@requestnetwork/request-client.js";
-import { hasSufficientFunds, payRequest } from "@requestnetwork/payment-processor";
+import {
+  hasSufficientFunds,
+  payRequest,
+} from "@requestnetwork/payment-processor";
 import {
   approveErc20,
   hasErc20Approval,
@@ -27,9 +30,9 @@ function PayButton({
   });
 
   async function approveRequest() {
-    console.log(requestData)
+    console.log(requestData);
     try {
-      console.log("test")
+      console.log("test");
       const _request = await requestClient.fromRequestId(
         requestData!.requestId
       );
@@ -72,14 +75,16 @@ function PayButton({
 
   async function payTheRequest() {
     try {
-      console.log(requestData)
+      console.log(requestData);
       console.log(requestData.requestId);
-      const _request = await requestClient.fromRequestId(requestData!.requestId);
-      console.log(_request)
+      const _request = await requestClient.fromRequestId(
+        requestData!.requestId
+      );
+      console.log(_request);
       let _requestData = _request.getData();
       const paymentTx = await payRequest(_requestData, signer);
       await paymentTx.wait(2);
-  
+
       // Poll the request balance once every second until payment is detected
       // TODO Add a timeout
       while (_requestData.balance?.balance! < _requestData.expectedAmount) {
@@ -90,20 +95,25 @@ function PayButton({
       alert(`payment detected!`);
       // setRequestData(_requestData);
       // setStatus(APP_STATUS.REQUEST_PAID);
-    } 
-    catch (err) {
+    } catch (err) {
       // setStatus(APP_STATUS.APPROVED);
       console.log(err);
     }
   }
 
-  return <button 
-  className="btn btn-primary"
-  onClick={async () => {
-    await approveRequest();
-    await payTheRequest();
-  }
-  }>Pay Request</button>;
+  return (
+    <button
+      className="ml-auto w-[100px] h-[33px] bg-[#9B59B6] text-white rounded-[4px] 
+          hover:bg-[#8E44AD] active:bg-[#6C3483] active:transform active:scale-95 
+          transition-all duration-200 ease-in-out"
+      onClick={async () => {
+        await approveRequest();
+        await payTheRequest();
+      }}
+    >
+      Pay now
+    </button>
+  );
 }
 
 export default PayButton;

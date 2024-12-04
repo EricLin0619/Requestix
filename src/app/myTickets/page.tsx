@@ -4,17 +4,30 @@ import MyTicketCard from "@/components/myTicketCard";
 import { useEffect, useState } from "react";
 import retriveRequest from "@/requestModule/retriveRequest";
 import { useAccount } from "wagmi";
-import { Types } from "@requestnetwork/request-client.js";
+import { useQuery } from '@tanstack/react-query';
 
 function Page() {
   const { address } = useAccount();
-  const [requestDatas, setRequestDatas] = useState<any[]>([]);
+  // const [requestDatas, setRequestDatas] = useState<any[]>([]);
 
-  useEffect(() => {
-    retriveRequest("sepolia", address as `0x${string}`).then((data) => {
-      setRequestDatas(data);
-    });
-  }, []);
+  const { data: requestDatas = [], isLoading } = useQuery<any[]>({
+    queryKey: ['requestDatas'],
+    queryFn: () => retriveRequest("sepolia", address as `0x${string}`),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000, 
+  });
+
+  // useEffect(() => {
+  //   retriveRequest("sepolia", address as `0x${string}`).then((data) => {
+  //     setRequestDatas(data);
+  //   });
+  // }, []);
+
+  if (isLoading) return (
+    <div className="flex justify-center items-center h-screen">
+      <span className="loading loading-ring text-black w-[100px] h-[100px]"></span>
+    </div>
+  )
 
   return (
     <div className="mt-10 mb-4">
@@ -29,6 +42,7 @@ function Page() {
             location,
             price,
             registerDate,
+            imageUrl,
           } = requestData.contentData;
           if (env === "test") {
             return (
@@ -41,6 +55,8 @@ function Page() {
               location={location}
               price={price}
               registerDate={registerDate}
+              imageUrl={imageUrl}
+              requestData={requestData}
             />
             );
           }

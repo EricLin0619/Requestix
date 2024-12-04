@@ -160,7 +160,8 @@ function TicketCard({
                 endDate: endDate,
                 buyerAddress: address as `0x${string}`,
                 registerDate: Math.floor(Date.now() / 1000),
-                env: "test"
+                env: "test",
+                imageUrl: imageUrl
               },
               walletClient as WalletClient
             )
