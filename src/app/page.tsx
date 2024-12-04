@@ -1,16 +1,11 @@
 "use client";
-import { useAccount } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import TicketCard from "@/components/ticketCard";
-import { useState, useEffect } from "react";
-import { Types } from "@requestnetwork/request-client.js";
 import { getAllEvents } from "@/service/contractService";
 import { useQuery } from '@tanstack/react-query';
 import { MediaRenderer } from "@thirdweb-dev/react";
 
 export default function Home() {
-  const { address } = useAccount();
-  const [requestDatas, setRequestDatas] = useState<Types.IRequestData[]>([]);
 
   const { data: events = [], isLoading } = useQuery<any[]>({
     queryKey: ['events'],
@@ -18,13 +13,6 @@ export default function Home() {
     staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000, 
   });
-
-  // useEffect(() => {
-  //   retriveRequest("sepolia", address as `0x${string}`).then((data) => {
-  //     console.log(data);
-  //     setRequestDatas(data);
-  //   });
-  // }, []);
 
   if (isLoading) return (
     <div className="flex justify-center items-center h-screen">
@@ -57,11 +45,6 @@ export default function Home() {
       </div>
       {/* <MediaRenderer src="ipfs://QmcqtH1hCvA2jbveNHnaSpj79KT5UdnHCVeGSCy6YLtMav/0" />
       <MediaRenderer src="ipfs://QmTn17XVX7AtRufh68USVedsBY8mAstZ6smYWCaBYkHAx7/0" /> */}
-      {/* <PayButton
-        requestData={requestDatas[8]}
-        payerAddress={address as `0x${string}`}
-        gatewayChain="sepolia"
-      /> */}
     </div>
   );
 }
