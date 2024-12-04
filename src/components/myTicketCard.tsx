@@ -51,7 +51,7 @@ function MyTicketCard({
         </div>
       </div>
       <img
-        src={imageUrl ? convertIpfsUrl(imageUrl) : "/event.jpg"}
+        src={imageUrl ? convertIpfsUrl(imageUrl) : "./event.jpg"}
         alt="yoasobi"
         className="w-[100%] h-[150px] object-cover"
       />

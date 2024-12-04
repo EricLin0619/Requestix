@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^1.0.8",
-    "@requestnetwork/payment-detection": "0.41.0",
-    "@requestnetwork/payment-processor": "0.43.0",
+    "@requestnetwork/payment-detection": "0.46.0",
+    "@requestnetwork/payment-processor": "0.49.0",
     "@requestnetwork/request-client.js": "0.51.0",
     "@requestnetwork/web3-signature": "0.4.41",
     "@tanstack/react-query": "^4.36.1",
