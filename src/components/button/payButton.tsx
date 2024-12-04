@@ -27,6 +27,7 @@ function PayButton({
   });
 
   async function approveRequest() {
+    console.log(requestData)
     try {
       console.log("test")
       const _request = await requestClient.fromRequestId(
@@ -100,7 +101,7 @@ function PayButton({
   className="btn btn-primary"
   onClick={async () => {
     await approveRequest();
-    payTheRequest();
+    await payTheRequest();
   }
   }>Pay Request</button>;
 }

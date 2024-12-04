@@ -5,23 +5,28 @@ import { WalletClient } from "viem";
 import TicketCard from "@/components/ticketCard";
 import retriveRequest from "@/requestModule/retriveRequest";
 import PayButton from "@/components/button/payButton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Types } from "@requestnetwork/request-client.js";
 import { getAllEvents } from "@/service/contractService";
 import { useQuery } from '@tanstack/react-query';
 
 export default function Home() {
   const { address } = useAccount();
-  const payeeIdentity = address;
-  const payerIdentity = "0x519145B771a6e450461af89980e5C17Ff6Fd8A92";
   const [requestDatas, setRequestDatas] = useState<Types.IRequestData[]>([]);
 
   const { data: events = [], isLoading } = useQuery<any[]>({
     queryKey: ['events'],
     queryFn: getAllEvents,
-    staleTime: 5 * 60 * 1000, // 數據在 5 分鐘內被認為是新鮮的
-    cacheTime: 30 * 60 * 1000, // 緩存保留 30 分鐘
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000, 
   });
+
+  useEffect(() => {
+    retriveRequest("sepolia", address as `0x${string}`).then((data) => {
+      console.log(data);
+      setRequestDatas(data);
+    });
+  }, []);
 
   if (isLoading) return (
     <div className="flex justify-center items-center h-screen">
@@ -53,8 +58,8 @@ export default function Home() {
         })}
       </div>
       {/* <PayButton
-        requestData={requestDatas[5]}
-        payerAddress={payerIdentity}
+        requestData={requestDatas[8]}
+        payerAddress={address as `0x${string}`}
         gatewayChain="sepolia"
       /> */}
     </div>

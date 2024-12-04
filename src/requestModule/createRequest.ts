@@ -11,6 +11,7 @@ import { Web3SignatureProvider } from "@requestnetwork/web3-signature";
 export async function createRequest(
   payeeIdentity: `0x${string}`,
   payerIdentity: `0x${string}`,
+  amount: number,
   gatewayChain: string,
   currencyName: string,
   txContent: object,
@@ -31,7 +32,7 @@ export async function createRequest(
         network: currencies.get(currencyName)!.network,
       },
       expectedAmount: parseUnits(
-        "100",
+        amount.toString(),
         currencies.get(currencyName)!.decimals
       ).toString(),
       payee: {
