@@ -44,8 +44,8 @@ function TicketCard({
   }
 
   useEffect(() => {
+    console.log(metadataUrl)
     fetchIpfsData(metadataUrl).then((data) => {
-      console.log(data);
       setEventName(data.eventName);
       setLocation(data.location);
       setPrice(data.price);

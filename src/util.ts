@@ -1,6 +1,6 @@
 export function convertIpfsUrl(ipfsUrl: string): string {
   if (ipfsUrl.startsWith("ipfs://")) {
-    return ipfsUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
+    return ipfsUrl.replace("ipfs://", "https://482b934d10599d46f13e52972ea433e8.ipfscdn.io/ipfs/");
   }
   return ipfsUrl;
 }
