@@ -12,6 +12,14 @@ async function retriveRequest(gatewayChain: string, identityAddress: string) {
   const requests = await requestClient.fromIdentity({
     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
     value: identityAddress,
+  },
+  {
+    from: 0,
+    to: 0
+  },
+  {
+    page: 1,
+    pageSize: 100,
   });
 
   const requestDatas = requests.map((request) => {
