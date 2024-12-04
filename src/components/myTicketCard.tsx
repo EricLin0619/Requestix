@@ -1,8 +1,28 @@
 "use client";
 
 import Countdown from "@/components/countDown";
+import { useAccount } from "wagmi";
 
-function MyTicketCard() {
+function MyTicketCard(
+  {
+    eventId,
+    eventName,
+    startDate,
+    endDate,
+    location,
+    price,
+    registerDate
+  }: {
+    eventId: number,
+    eventName: string,
+    startDate: number,
+    endDate: number,
+    location: string,
+    price: number,
+    registerDate: number
+  }
+) {
+  const { address } = useAccount();
     return ( 
         <div className="w-[100%] h-[380px] rounded-[8px] shadow-[0px_4px_12px_9px_rgba(0,_0,_0,_0.1)]">
       <div className="w-full h-[36px] flex items-center pl-4">
@@ -14,13 +34,13 @@ function MyTicketCard() {
         className="w-[100%] h-[150px] object-cover"
       />
       <div className="p-4 text-black">
-        <p className="text-xl font-bold mb-3">Yoasobi 2024 Concert</p>
-        <p>Date: 2024-11-28</p>
-        <p>Location: Tokyo Dome</p>
-        <p>price: 10000</p>
+        <p className="text-xl font-bold mb-3">{eventName}</p>
+        <p>Date: {new Date(startDate * 1000).toLocaleDateString()} - {new Date(endDate * 1000).toLocaleDateString()}</p>
+        <p>Location: {location}</p>
+        <p>price: {price}</p>
       </div>
       <div className="w-full h-[36px] flex items-center px-4 pb-2">
-        <Countdown endTime={1734127074} />
+        <Countdown endTime={registerDate + 60 * 60 * 24 * 2} />
         <button className="ml-auto w-[100px] h-[33px] bg-[#9B59B6] text-white rounded-[4px] 
           hover:bg-[#8E44AD] active:bg-[#6C3483] active:transform active:scale-95 
           transition-all duration-200 ease-in-out">

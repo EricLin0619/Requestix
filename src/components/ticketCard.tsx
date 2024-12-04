@@ -144,12 +144,14 @@ function TicketCard({
           onClick={async () => {
             console.log("creating request");
             await createRequest(
-              "0xbB83a6e1AAE3C20930CDC695Ad971d632e578FC1",
+              organizer as `0x${string}`,
               address as `0x${string}`,
               price,
               "sepolia",
               "11155111_FAU",
               {
+                contractAddress: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS,
+                eventId: eventId,
                 eventName: eventName,
                 organizer: organizer,
                 location: location,
@@ -158,6 +160,7 @@ function TicketCard({
                 endDate: endDate,
                 buyerAddress: address as `0x${string}`,
                 registerDate: Math.floor(Date.now() / 1000),
+                env: "test"
               },
               walletClient as WalletClient
             )

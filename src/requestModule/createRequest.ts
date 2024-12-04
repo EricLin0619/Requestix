@@ -17,6 +17,7 @@ export async function createRequest(
   txContent: object,
   walletClient: WalletClient
 ) {
+  console.log(gatewayChain)
   const web3SignatureProvider = new Web3SignatureProvider(walletClient)
   const requestClient = new RequestNetwork({
     nodeConnectionConfig: {
@@ -67,7 +68,7 @@ export async function createRequest(
       value: payeeIdentity, // payeeIdentity
     },
   };
-
+  console.log(requestCreateParameters);
   const request = await requestClient.createRequest(requestCreateParameters);
   console.log(request);
 }

@@ -11,8 +11,8 @@ import { getAllEvents } from "@/service/contractService";
 import { useQuery } from '@tanstack/react-query';
 
 export default function Home() {
-  const { address } = useAccount();
-  const [requestDatas, setRequestDatas] = useState<Types.IRequestData[]>([]);
+  // const { address } = useAccount();
+  // const [requestDatas, setRequestDatas] = useState<Types.IRequestData[]>([]);
 
   const { data: events = [], isLoading } = useQuery<any[]>({
     queryKey: ['events'],
@@ -21,12 +21,12 @@ export default function Home() {
     cacheTime: 30 * 60 * 1000, 
   });
 
-  useEffect(() => {
-    retriveRequest("sepolia", address as `0x${string}`).then((data) => {
-      console.log(data);
-      setRequestDatas(data);
-    });
-  }, []);
+  // useEffect(() => {
+  //   retriveRequest("sepolia", address as `0x${string}`).then((data) => {
+  //     console.log(data);
+  //     setRequestDatas(data);
+  //   });
+  // }, []);
 
   if (isLoading) return (
     <div className="flex justify-center items-center h-screen">
@@ -36,7 +36,7 @@ export default function Home() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-x-10 gap-y-10 mt-10 justify-items-center items-center">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-x-10 gap-y-10 mt-10 mb-4 justify-items-center items-center">
         {events.map((event, index) => {
           const ipfsUrl = event[0];
           const organizer = event[1];
