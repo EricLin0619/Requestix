@@ -5,6 +5,7 @@ import { useAccount } from "wagmi";
 import { convertIpfsUrl } from "../util";
 import PayButton from "@/components/button/payButton";
 import { Types } from "@requestnetwork/request-client.js";
+import { registerEvent } from "@/service/contractService";
 
 function MyTicketCard({
   eventId,
@@ -51,7 +52,7 @@ function MyTicketCard({
         </div>
       </div>
       <img
-        src={imageUrl ? convertIpfsUrl(imageUrl) : "./event.jpg"}
+        src={imageUrl ? convertIpfsUrl(imageUrl) : "event.jpg"}
         alt="yoasobi"
         className="w-[100%] h-[150px] object-cover"
       />
@@ -68,7 +69,7 @@ function MyTicketCard({
         {!isPaid && !isExpired && (
           <>
             <Countdown endTime={registerDate + 60 * 60 * 24 * 2} />
-            <PayButton requestData={requestData} payerAddress={address as `0x${string}`} gatewayChain="sepolia" />
+            <PayButton requestData={requestData} payerAddress={address as `0x${string}`} gatewayChain="sepolia" eventId={eventId} />
           </>
         )}
       </div>

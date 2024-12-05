@@ -2,12 +2,15 @@
 pragma solidity ^0.8.0;
 
 contract EventRegistry {
+    address private owner;
     struct Event {
         string metadata;    // IPFS hash storing event details (name, price, location, times)
         address organizer;  // event organizer address
         uint256 maxRegistrations; // max registrations
         uint256 registeredCount;  // registered count
         bool isActive;      // event is active
+        uint256 saleStartDate; // 销售开始时间戳
+        uint256 saleEndDate;   // 销售结束时间戳
     }
 
     // store event information
@@ -32,17 +35,21 @@ contract EventRegistry {
     // create new event
     function createEvent(
         string memory _metadata,
-        uint256 _maxRegistrations
+        uint256 _maxRegistrations,
+        uint256 _saleStartDate,
+        uint256 _saleEndDate
     ) public {
         require(_maxRegistrations > 0, "Max registrations must be greater than 0");
-        
+        require(_saleEndDate > _saleStartDate, "End date must be after start date");
         eventCount++;
         events[eventCount] = Event({
             metadata: _metadata,
             organizer: msg.sender,
             maxRegistrations: _maxRegistrations,
             registeredCount: 0,
-            isActive: true
+            isActive: true,
+            saleStartDate: _saleStartDate,
+            saleEndDate: _saleEndDate
         });
 
         emit EventCreated(
@@ -51,19 +58,25 @@ contract EventRegistry {
             msg.sender
         );
     }
+    constructor() {
+        owner = msg.sender;
+    }
 
     // register for event
-    function registerForEvent(uint256 _eventId) public {
+    function registerForEvent(uint256 _eventId, address _user) public {
         Event storage _event = events[_eventId];
-        
+
+        require(msg.sender == owner, "Only owner can register for event");
         require(_event.isActive, "Event does not exist or has ended");
+        require(block.timestamp >= _event.saleStartDate, "Sale has not started yet");
+        require(block.timestamp <= _event.saleEndDate, "Sale has ended");
         require(_event.registeredCount < _event.maxRegistrations, "Registration limit reached");
         require(!registeredUsers[_eventId][msg.sender], "You have already registered for this event");
 
-        registeredUsers[_eventId][msg.sender] = true;
+        registeredUsers[_eventId][_user] = true;
         _event.registeredCount++;
 
-        emit UserRegistered(_eventId, msg.sender);
+        emit UserRegistered(_eventId, _user);
     }
 
     // check if user is registered
@@ -87,7 +100,9 @@ contract EventRegistry {
         address organizer,
         uint256 maxRegistrations,
         uint256 registeredCount,
-        bool isActive
+        bool isActive,
+        uint256 saleStartDate,
+        uint256 saleEndDate
     ) {
         Event storage _event = events[_eventId];
         return (
@@ -95,7 +110,9 @@ contract EventRegistry {
             _event.organizer,
             _event.maxRegistrations,
             _event.registeredCount,
-            _event.isActive
+            _event.isActive,
+            _event.saleStartDate,
+            _event.saleEndDate
         );
     }
 

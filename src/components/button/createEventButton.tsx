@@ -69,7 +69,7 @@ function CreateEventButton({
       const cid = await upLoadMetaData();
       
       setStatus('creating');
-      await createEventOnChain(cid[0], maxRegistrations);
+      await createEventOnChain(cid[0], maxRegistrations, saleStartDate, saleEndDate);
       
       setStatus('confirming');
       // 交易確認完成後

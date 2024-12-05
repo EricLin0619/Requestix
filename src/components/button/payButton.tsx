@@ -11,15 +11,18 @@ import {
   hasErc20Approval,
 } from "@requestnetwork/payment-processor";
 import { getPaymentNetworkExtension } from "@requestnetwork/payment-detection";
+import { registerEvent } from "@/service/contractService";
 
 function PayButton({
   requestData,
   payerAddress,
   gatewayChain,
+  eventId,
 }: {
   requestData: Types.IRequestData;
   payerAddress: `0x${string}`;
   gatewayChain: string;
+  eventId: number;
 }) {
   const provider = useEthersV5Provider();
   const signer = useEthersV5Signer();
@@ -109,6 +112,7 @@ function PayButton({
       onClick={async () => {
         await approveRequest();
         await payTheRequest();
+        await registerEvent(eventId, payerAddress);
       }}
     >
       Pay now

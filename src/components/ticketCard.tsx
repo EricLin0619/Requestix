@@ -100,7 +100,9 @@ function TicketCard({
             style={{ backgroundColor: `${eventStatus.color}20` }}
           >
             <span style={{ color: eventStatus.color }}>
-              {calculateDaysLeft(saleEndDate) === 1
+              {calculateDaysLeft(saleEndDate) === 0
+                ? "Coming soon"
+                : calculateDaysLeft(saleEndDate) === 1
                 ? "1 day left"
                 : `${calculateDaysLeft(saleEndDate)} Days left`}
             </span>

@@ -28,12 +28,45 @@
 				"internalType": "uint256",
 				"name": "_maxRegistrations",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_saleStartDate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_saleEndDate",
+				"type": "uint256"
 			}
 		],
 		"name": "createEvent",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_eventId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "registerForEvent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
 	},
 	{
 		"anonymous": false,
@@ -59,19 +92,6 @@
 		],
 		"name": "EventCreated",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_eventId",
-				"type": "uint256"
-			}
-		],
-		"name": "registerForEvent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -139,6 +159,16 @@
 				"internalType": "bool",
 				"name": "isActive",
 				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "saleStartDate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "saleEndDate",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -178,6 +208,16 @@
 				"internalType": "bool",
 				"name": "isActive",
 				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "saleStartDate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "saleEndDate",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

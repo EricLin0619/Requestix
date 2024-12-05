@@ -1,14 +1,26 @@
 import { writeContract, prepareWriteContract, waitForTransaction, readContract } from "@wagmi/core";
 import ABI from "../contracts/ABI.json";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { BytesLike, ethers } from "ethers";
 
-export async function createEventOnChain(metaDataCid: string, maxRegistrations: number) {
+const provider = new ethers.providers.JsonRpcProvider(
+  "https://rpc.sepolia.org"
+);
+const signer = new ethers.Wallet(
+  process.env.NEXT_PUBLIC_PRIVATE_KEY as BytesLike,
+  provider
+);
+const contract = new ethers.Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`, ABI, signer);
+
+
+export async function createEventOnChain(metaDataCid: string, maxRegistrations: number, saleStartDate: number, saleEndDate: number) {
+  console.log(metaDataCid, maxRegistrations, saleStartDate, saleEndDate)
   const config = await prepareWriteContract({
     address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
     abi: ABI,
     chainId: 11155111, //sepolia
     functionName: "createEvent",
-    args: [metaDataCid, maxRegistrations],
+    args: [metaDataCid, maxRegistrations, saleStartDate, saleEndDate],
   })
 
   const { hash } = await writeContract(config);
@@ -19,17 +31,6 @@ export async function createEventOnChain(metaDataCid: string, maxRegistrations: 
   
   return receipt;
 }
-
-// export async function eventCount(): Promise<number> {
-//   const data = await readContract({
-//     address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
-//     abi: ABI,
-//     functionName: "eventCount",
-//     blockTag: "latest",
-//   });
-//   console.log(data)
-//   return data as number;
-// }
 
 export async function eventCount() {
   const sdk = new ThirdwebSDK("sepolia", {
@@ -48,11 +49,9 @@ export async function getAllEvents() {
   const events = []
 
   const count = await contract.call("eventCount");
-  console.log(count)
   
   for (let i = 1; i <= count; i++) {
     const data = await contract.call("events", [i]);
-    console.log(data)
     events.push(data);
   }
   return events;
@@ -65,6 +64,9 @@ export async function getEvent(eventId: number) {
     functionName: "getEvent",
     args: [eventId],
   });
-  console.log(data)
   return data;
+}
+
+export async function registerEvent(eventId: number, payerAddress: `0x${string}`) {
+  const data = await contract.registerForEvent(eventId, payerAddress);
 }
