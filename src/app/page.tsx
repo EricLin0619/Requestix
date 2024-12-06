@@ -5,6 +5,8 @@ import { getAllEvents } from "@/service/contractService";
 import { useQuery } from "@tanstack/react-query";
 import { MediaRenderer } from "@thirdweb-dev/react";
 import { useState, useEffect } from "react";
+import { checkRegistered } from "@/service/contractService";
+import { useAccount } from "wagmi";
 
 type FilterType = "all" | "onGoing" | "upComing" | "ended";
 export default function Home() {
@@ -14,8 +16,8 @@ export default function Home() {
     staleTime: 5 * 60 * 1000,
     cacheTime: 30 * 60 * 1000,
   });
-  const [filter, setFilter] = useState<FilterType>("all");
 
+  const [filter, setFilter] = useState<FilterType>("all");
   const tabs: { label: string; value: FilterType }[] = [
     { label: "All", value: "all" },
     { label: "On Going", value: "onGoing" },
@@ -25,8 +27,9 @@ export default function Home() {
 
   const filterEvents = (event: any, filter: string) => {
     const now = Math.floor(Date.now() / 1000);
-    const saleStartDate = parseInt(event[5]._hex);
-    const saleEndDate = parseInt(event[6]._hex);
+    const saleStartDate = event[5];
+    const saleEndDate = event[6];
+    console.log(now, saleStartDate, saleEndDate)
 
     switch (filter) {
       case "onGoing":

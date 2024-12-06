@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { createRequest } from "../requestModule/createRequest";
 import { useAccount, useWalletClient } from "wagmi";
 import { WalletClient } from "viem";
+import { checkRegistered } from "@/service/contractService";
+
 // ticket status: for sale, end, open for registration
 function TicketCard({
   metadataUrl,
@@ -31,6 +33,7 @@ function TicketCard({
   const [saleStartDate, setSaleStartDate] = useState(0);
   const [saleEndDate, setSaleEndDate] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
+  const [isRegistered, setIsRegistered] = useState(false);
 
   async function fetchIpfsData(metadataUrl: string) {
     try {
@@ -44,7 +47,7 @@ function TicketCard({
   }
 
   useEffect(() => {
-    console.log(metadataUrl)
+    console.log(metadataUrl);
     fetchIpfsData(metadataUrl).then((data) => {
       setEventName(data.eventName);
       setLocation(data.location);
@@ -55,7 +58,13 @@ function TicketCard({
       setSaleEndDate(data.saleEndDate);
       setImageUrl(data?.image);
     });
-  }, []);
+
+    if (address && eventId) {
+      checkRegistered(eventId, address as `0x${string}`).then((registered) => {
+        setIsRegistered(registered as any);
+      });
+    }
+  }, [address, eventId]);
 
   function formatUnixTimestamp(timestamp: number): string {
     const date = new Date(timestamp * 1000); // 將秒轉換為毫秒
@@ -65,7 +74,12 @@ function TicketCard({
   function getEventStatus(): { status: string; color: string } {
     const now = Math.floor(Date.now() / 1000); // 當前時間（秒）
 
-    if (now < saleStartDate) {
+    if (isRegistered) {
+      return {
+        status: "Registered",
+        color: "#808080", // 灰色
+      };
+    } else if (now < saleStartDate) {
       return {
         status: "Upcoming",
         color: "#FF9900", // 橙色
@@ -89,12 +103,12 @@ function TicketCard({
     <div className="w-[100%] h-[380px] rounded-[8px] shadow-[0px_4px_12px_9px_rgba(0,_0,_0,_0.1)]">
       <div className="w-full h-[36px] flex items-center pl-4">
         <div
-          className="w-[25%] h-[20px] flex items-center justify-center rounded-[4px] text-sm mr-1 text-white"
+          className="px-2 h-[20px] flex items-center justify-center rounded-[4px] text-sm mr-1 text-white"
           style={{ backgroundColor: eventStatus.color }}
         >
-          {eventStatus.status}
+          {isRegistered ? "Registered" : eventStatus.status}
         </div>
-        {eventStatus.status === "For Sale" && (
+        {!isRegistered && eventStatus.status === "For Sale" && (
           <div
             className="text-sm bg-opacity-15 rounded-[4px] px-2"
             style={{ backgroundColor: `${eventStatus.color}20` }}
@@ -172,13 +186,13 @@ function TicketCard({
           className={`ml-auto w-[100px] h-[33px] text-white rounded-[4px] 
           transition-all duration-200 ease-in-out
           ${
-            eventStatus.status === "For Sale"
+            eventStatus.status === "For Sale" && !isRegistered
               ? "bg-[#2bae0a] hover:bg-[#239108] active:bg-[#1c7206] active:transform active:scale-95"
               : "bg-gray-400 cursor-not-allowed"
           }`}
-          disabled={eventStatus.status !== "For Sale"}
+          disabled={eventStatus.status !== "For Sale" || isRegistered}
         >
-          {eventStatus.status === "For Sale" ? "Buy now" : "Buy now"}
+          {isRegistered ? "Registered" : "Buy now"}
         </button>
       </div>
     </div>

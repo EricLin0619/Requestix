@@ -84,24 +84,22 @@ export async function eventCount() {
 
 export async function getAllEvents() {
   const count = await web3Contract.methods.eventCount().call() as number;
+  console.log(count)
   const events = []
   for (let i = 1; i <= count; i++) {
     const data = await web3Contract.methods.getEvent(i).call();
     events.push(data);
   }
+  console.log(events)
   return events;
 }
 
-export async function getEvent(eventId: number) {
-  const data = await readContract({
-    address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
-    abi: ABI,
-    functionName: "getEvent",
-    args: [eventId],
-  });
+export async function checkRegistered(eventId: number, payerAddress: `0x${string}`) {
+  const data = await web3Contract.methods.isRegistered(eventId, payerAddress).call();
   return data;
 }
 
 export async function registerEvent(eventId: number, payerAddress: `0x${string}`) {
+  console.log(eventId, payerAddress)
   const data = await contract.registerForEvent(eventId, payerAddress);
 }

@@ -18,11 +18,13 @@ function PayButton({
   payerAddress,
   gatewayChain,
   eventId,
+  setIsProcessing,
 }: {
   requestData: Types.IRequestData;
   payerAddress: `0x${string}`;
   gatewayChain: string;
   eventId: number;
+  setIsProcessing: (isProcessing: boolean) => void;
 }) {
   const provider = useEthersV5Provider();
   const signer = useEthersV5Signer();
@@ -110,9 +112,11 @@ function PayButton({
           hover:bg-[#8E44AD] active:bg-[#6C3483] active:transform active:scale-95 
           transition-all duration-200 ease-in-out"
       onClick={async () => {
+        setIsProcessing(true);
         await approveRequest();
         await payTheRequest();
         await registerEvent(eventId, payerAddress);
+        setIsProcessing(false);
       }}
     >
       Pay now
