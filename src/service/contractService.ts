@@ -14,7 +14,7 @@ const signer = new ethers.Wallet(
 const contract = new ethers.Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`, ABI, signer);
 
 // web3
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.sepolia.org"));
+const web3 = new Web3(new Web3.providers.HttpProvider("https://ethereum-sepolia-rpc.publicnode.com"));
 const web3Contract = new web3.eth.Contract(ABI, process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`);
 
 
