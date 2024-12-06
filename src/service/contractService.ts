@@ -41,17 +41,37 @@ export async function eventCount() {
   return count;
 }
 
-export async function getAllEvents() {
-  const sdk = new ThirdwebSDK("sepolia", {
-    clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID as string,
-  });
-  const contract = await sdk.getContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`);
-  const events = []
+// export async function getAllEvents() {
+//   const sdk = new ThirdwebSDK("sepolia", {
+//     clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID as string,
+//   });
+//   const contract = await sdk.getContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`);
+//   const events = []
 
-  const count = await contract.call("eventCount");
+//   const count = await contract.call("eventCount");
   
+//   for (let i = 1; i <= count; i++) {
+//     const data = await contract.call("events", [i]);
+//     events.push(data);
+//   }
+//   return events;
+// }
+
+export async function getAllEvents() {
+  const count = await readContract({
+    address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
+    abi: ABI,
+    functionName: "eventCount",
+  }) as number;
+  console.log(count)
+  const events: any[] = []
   for (let i = 1; i <= count; i++) {
-    const data = await contract.call("events", [i]);
+    const data = await readContract({
+      address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
+      abi: ABI,
+      functionName: "events",
+      args: [i],
+    });
     events.push(data);
   }
   return events;

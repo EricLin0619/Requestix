@@ -28,15 +28,6 @@ export default function Home() {
     const saleStartDate = parseInt(event[5]._hex);
     const saleEndDate = parseInt(event[6]._hex);
 
-    console.log({
-      filter,
-      now,
-      saleStartDate,
-      saleEndDate,
-      isUpcoming: saleStartDate > now,
-      timeUntilStart: saleStartDate - now,
-    });
-
     switch (filter) {
       case "onGoing":
         return saleStartDate <= now && saleEndDate >= now;
