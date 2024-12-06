@@ -26,11 +26,15 @@ import {
   export const { chains, publicClient, webSocketPublicClient } = configureChains(
     [
       mainnet,
-      sepolia,
+      {
+        ...sepolia,
+        transports: {
+          http: ['https://ethereum-sepolia-rpc.publicnode.com']
+        }
+      },
       {
         ...gnosis,
-        iconUrl:
-          "https://raw.githubusercontent.com/gnosischain/media-kit/main/Logos/Owl_Logo%20-%20Mark.svg",
+        iconUrl: "https://raw.githubusercontent.com/gnosischain/media-kit/main/Logos/Owl_Logo%20-%20Mark.svg",
       },
       polygon,
       optimism,
@@ -41,7 +45,7 @@ import {
       fantom,
       moonbeam,
     ],
-    [publicProvider()],
+    [publicProvider()]
   );
   
   // For details about Wallet Connect Project ID: https://docs.walletconnect.com/cloud/relay#project-id

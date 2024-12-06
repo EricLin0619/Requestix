@@ -17,7 +17,6 @@ const contract = new ethers.Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as
 const web3 = new Web3(new Web3.providers.HttpProvider("https://ethereum-sepolia-rpc.publicnode.com"));
 const web3Contract = new web3.eth.Contract(ABI, process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`);
 
-
 export async function createEventOnChain(metaDataCid: string, maxRegistrations: number, saleStartDate: number, saleEndDate: number) {
   console.log(metaDataCid, maxRegistrations, saleStartDate, saleEndDate)
   const config = await prepareWriteContract({
@@ -29,12 +28,13 @@ export async function createEventOnChain(metaDataCid: string, maxRegistrations: 
   })
 
   const { hash } = await writeContract(config);
+  console.log("txHash is",hash)
   // 等待交易被確認
-  const receipt = await waitForTransaction({
-    hash,
-  });
-  
-  return receipt;
+  // const receipt = await waitForTransaction({
+  //   hash,
+  // });
+  // console.log("receipt is",receipt)
+  return hash;
 }
 
 export async function eventCount() {

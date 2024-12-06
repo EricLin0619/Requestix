@@ -74,10 +74,14 @@ function CreateEventButton({
       setStatus('confirming');
       // 交易確認完成後
       setStatus('idle');
+      console.log("Event created successfully");
       setLoading(false);
     } catch (error) {
       console.error("Error creating event:", error);
       setStatus('idle');
+      setLoading(false);
+    } finally {
+      // 確保無論成功或失敗，都會重置 loading 狀態
       setLoading(false);
     }
   }
