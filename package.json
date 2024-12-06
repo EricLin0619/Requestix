@@ -32,7 +32,8 @@
     "react-dom": "^18",
     "typescript": "5.3.3",
     "viem": "1.20.0",
-    "wagmi": "1.4.12"
+    "wagmi": "1.4.12",
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@types/node": "^20",
