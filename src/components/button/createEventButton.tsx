@@ -3,6 +3,7 @@ import { useStorageUpload } from "@thirdweb-dev/react";
 import ABI from "@/contracts/ABI.json";
 import { useState } from "react";
 import { createEventOnChain } from "@/service/contractService";
+import toast from "react-hot-toast";
 
 function CreateEventButton({
   inputCheck,
@@ -74,10 +75,10 @@ function CreateEventButton({
       setStatus('confirming');
       // 交易確認完成後
       setStatus('idle');
-      console.log("Event created successfully");
+      toast.success("Event created successfully");
       setLoading(false);
     } catch (error) {
-      console.error("Error creating event:", error);
+      toast.error("Error creating event");
       setStatus('idle');
       setLoading(false);
     } finally {

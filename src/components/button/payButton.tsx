@@ -12,6 +12,7 @@ import {
 } from "@requestnetwork/payment-processor";
 import { getPaymentNetworkExtension } from "@requestnetwork/payment-detection";
 import { registerEvent } from "@/service/contractService";
+import toast from 'react-hot-toast';
 
 function PayButton({
   requestData,
@@ -42,30 +43,53 @@ function PayButton({
         requestData!.requestId
       );
       const _requestData = _request.getData();
-      alert(`Checking if payer has sufficient funds...`);
+      const toastId = toast.loading(`Checking if payer has sufficient funds...`, {
+        position: 'bottom-right',
+      });
       const _hasSufficientFunds = await hasSufficientFunds({
         request: _requestData,
         address: payerAddress as string,
         providerOptions: { provider: provider },
       });
+      // check if the payer has enough balance to pay the request
       console.log(`_hasSufficientFunds = ${_hasSufficientFunds}`);
-      alert(`_hasSufficientFunds = ${_hasSufficientFunds}`);
-      // if (!_hasSufficientFunds) {
-      //   setStatus(APP_STATUS.REQUEST_CONFIRMED);
-      //   return;
-      // }
+      if (!_hasSufficientFunds) {
+        toast.error("You don't have enough balance to pay the request", {
+          id: toastId,
+        });
+        return;
+      } else {
+        toast.success("You have enough balance to pay the request", {
+          id: toastId,
+        });
+      }
+
+      // check if the request is ERC20
       if (
         getPaymentNetworkExtension(requestData)?.id ===
         Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT
       ) {
-        alert(`ERC20 Request detected. Checking approval...`);
+        const erc20ToastId = toast.loading(`ERC20 Request detected. Checking approval...`, {
+          position: 'bottom-right',
+        });
         const _hasErc20Approval = await hasErc20Approval(
           _requestData,
           payerAddress as string,
           provider
         );
+
+        // check if the payer has enough approval to pay the request
         console.log(`_hasErc20Approval = ${_hasErc20Approval}`);
-        alert(`_hasErc20Approval = ${_hasErc20Approval}`);
+        if (_hasErc20Approval) {
+          toast.success("You have enough approval to pay the request", {
+            id: erc20ToastId,
+          });
+        } else {
+          toast.error("You don't have enough approval to pay the request", {
+            id: erc20ToastId,
+          });
+        }
+        
         if (!_hasErc20Approval) {
           const approvalTx = await approveErc20(_requestData, signer);
           await approvalTx.wait(2);
@@ -74,35 +98,46 @@ function PayButton({
       // setStatus(APP_STATUS.APPROVED);
     } catch (err) {
       // setStatus(APP_STATUS.REQUEST_CONFIRMED);
-      alert(JSON.stringify(err));
+      toast.error(JSON.stringify(err), {
+        position: 'bottom-right',
+      });
     }
   }
 
   async function payTheRequest() {
     try {
-      console.log(requestData);
-      console.log(requestData.requestId);
-      const _request = await requestClient.fromRequestId(
-        requestData!.requestId
-      );
-      console.log(_request);
+      const toastId = toast.loading('Processing payment...', {
+        position: 'bottom-right',
+      });
+      
+      const _request = await requestClient.fromRequestId(requestData!.requestId);
       let _requestData = _request.getData();
       const paymentTx = await payRequest(_requestData, signer);
       await paymentTx.wait(2);
 
-      // Poll the request balance once every second until payment is detected
-      // TODO Add a timeout
+      // 設置超時時間（例如：60秒）
+      const timeout = Date.now() + 60000;
+      
       while (_requestData.balance?.balance! < _requestData.expectedAmount) {
+        if (Date.now() > timeout) {
+          toast.error('Payment verification timeout', { id: toastId });
+          throw new Error('Payment verification timeout');
+        }
+
         _requestData = await _request.refresh();
-        alert(`balance = ${_requestData.balance?.balance}`);
+        // 更新 toast 顯示進度
+        toast.loading(
+          `Payment processing: ${_requestData.balance?.balance} / ${_requestData.expectedAmount}`, 
+          { id: toastId }
+        );
+        
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
-      alert(`payment detected!`);
-      // setRequestData(_requestData);
-      // setStatus(APP_STATUS.REQUEST_PAID);
+
+      toast.success('Payment completed successfully!', { id: toastId });
     } catch (err) {
-      // setStatus(APP_STATUS.APPROVED);
-      console.log(err);
+      toast.error(`Payment failed`);
+      console.error(err);
     }
   }
 

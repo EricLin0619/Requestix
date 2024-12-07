@@ -5,6 +5,7 @@ import { createRequest } from "../requestModule/createRequest";
 import { useAccount, useWalletClient } from "wagmi";
 import { WalletClient } from "viem";
 import { checkRegistered } from "@/service/contractService";
+import toast from "react-hot-toast";
 
 // ticket status: for sale, end, open for registration
 function TicketCard({
@@ -115,7 +116,7 @@ function TicketCard({
           >
             <span style={{ color: eventStatus.color }}>
               {calculateDaysLeft(saleEndDate) === 0
-                ? "Coming soon"
+                ? `${Math.ceil((saleEndDate * 1000 - Date.now()) / (1000 * 60 * 60))} hours left`
                 : calculateDaysLeft(saleEndDate) === 1
                 ? "1 day left"
                 : `${calculateDaysLeft(saleEndDate)} Days left`}
@@ -128,7 +129,9 @@ function TicketCard({
             style={{ backgroundColor: `${eventStatus.color}20` }}
           >
             <span style={{ color: eventStatus.color }}>
-              {calculateDaysLeft(saleStartDate) === 1
+              {calculateDaysLeft(saleStartDate) === 0
+                ? `${Math.ceil((saleStartDate * 1000 - Date.now()) / (1000 * 60 * 60))} hours until sale`
+                : calculateDaysLeft(saleStartDate) === 1
                 ? "1 day until sale"
                 : `${calculateDaysLeft(saleStartDate)} Days until sale`}
             </span>
@@ -181,6 +184,13 @@ function TicketCard({
               },
               walletClient as WalletClient
             )
+            toast.success("Request created successfully", {
+              position: 'bottom-right',
+            });
+            toast('Please pay in the next 48 hours!', {
+              icon: '💵',
+              position: 'bottom-right',
+            });
             console.log("request created");
           }}
           className={`ml-auto w-[100px] h-[33px] text-white rounded-[4px] 

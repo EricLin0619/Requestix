@@ -5,6 +5,7 @@ import { WagmiConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { chains, demoAppInfo, wagmiConfig } from "../config/rainbowKit";
 import { ThirdwebProvider } from "@thirdweb-dev/react";
+import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ export default function RootProvider({ children }: RootProviderProps) {
       >
         <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider appInfo={demoAppInfo} chains={chains} locale="en">
+            <Toaster/>
             {children}
           </RainbowKitProvider>
         </WagmiConfig>
