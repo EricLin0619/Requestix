@@ -4,6 +4,7 @@ import ABI from "@/contracts/ABI.json";
 import { useState } from "react";
 import { createEventOnChain } from "@/service/contractService";
 import toast from "react-hot-toast";
+import { useAccount } from "wagmi";
 
 function CreateEventButton({
   inputCheck,
@@ -33,6 +34,7 @@ function CreateEventButton({
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
   const { mutateAsync: upload } = useStorageUpload();
   const [status, setStatus] = useState<'idle' | 'uploading' | 'creating' | 'confirming'>('idle');
+  const { isConnected } = useAccount();
 
   async function upLoadMetaData() {
     let imageCid: string[] | null = null;
@@ -61,6 +63,10 @@ function CreateEventButton({
   }
 
   async function handleCreateEvent() {
+    if (!isConnected) {
+      toast.error("Please connect your wallet first!");
+      return;
+    }
     if (!inputCheck()) {
       return;
     }

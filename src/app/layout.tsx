@@ -11,7 +11,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/logo.png" sizes="180x180" />
         <title>Requestix</title>
       </head>
       <body className="overflow-x-hidden">

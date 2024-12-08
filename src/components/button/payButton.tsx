@@ -13,6 +13,7 @@ import {
 import { getPaymentNetworkExtension } from "@requestnetwork/payment-detection";
 import { registerEvent } from "@/service/contractService";
 import toast from 'react-hot-toast';
+import { useAccount } from "wagmi";
 
 function PayButton({
   requestData,
@@ -34,7 +35,7 @@ function PayButton({
       baseURL: storageChains.get(gatewayChain)!.gateway,
     },
   });
-
+  const { isConnected } = useAccount();
   async function approveRequest() {
     console.log(requestData);
     try {
@@ -44,7 +45,6 @@ function PayButton({
       );
       const _requestData = _request.getData();
       const toastId = toast.loading(`Checking if payer has sufficient funds...`, {
-        position: 'bottom-right',
       });
       const _hasSufficientFunds = await hasSufficientFunds({
         request: _requestData,
@@ -57,6 +57,7 @@ function PayButton({
         toast.error("You don't have enough balance to pay the request", {
           id: toastId,
         });
+        setIsProcessing(false);
         return;
       } else {
         toast.success("You have enough balance to pay the request", {
@@ -70,7 +71,6 @@ function PayButton({
         Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT
       ) {
         const erc20ToastId = toast.loading(`ERC20 Request detected. Checking approval...`, {
-          position: 'bottom-right',
         });
         const _hasErc20Approval = await hasErc20Approval(
           _requestData,
@@ -85,7 +85,7 @@ function PayButton({
             id: erc20ToastId,
           });
         } else {
-          toast.error("You don't have enough approval to pay the request", {
+          toast.error("You don't have enough approval to pay the request, approve the token first!", {
             id: erc20ToastId,
           });
         }
@@ -98,18 +98,17 @@ function PayButton({
       // setStatus(APP_STATUS.APPROVED);
     } catch (err) {
       // setStatus(APP_STATUS.REQUEST_CONFIRMED);
-      toast.error(JSON.stringify(err), {
-        position: 'bottom-right',
+      toast.error("Something went wrong, please try again later!", {
       });
+      setIsProcessing(false);
     }
   }
 
   async function payTheRequest() {
+    const toastId = toast.loading('Processing payment...', {
+    });
+    
     try {
-      const toastId = toast.loading('Processing payment...', {
-        position: 'bottom-right',
-      });
-      
       const _request = await requestClient.fromRequestId(requestData!.requestId);
       let _requestData = _request.getData();
       const paymentTx = await payRequest(_requestData, signer);
@@ -136,7 +135,7 @@ function PayButton({
 
       toast.success('Payment completed successfully!', { id: toastId });
     } catch (err) {
-      toast.error(`Payment failed`);
+      toast.error(`Payment failed`, { id: toastId });
       console.error(err);
     }
   }
@@ -147,11 +146,20 @@ function PayButton({
           hover:bg-[#8E44AD] active:bg-[#6C3483] active:transform active:scale-95 
           transition-all duration-200 ease-in-out"
       onClick={async () => {
+        if (!isConnected) {
+          toast.error("Please connect your wallet first!");
+          return;
+        }
         setIsProcessing(true);
-        await approveRequest();
-        await payTheRequest();
-        await registerEvent(eventId, payerAddress);
-        setIsProcessing(false);
+        try { 
+          await approveRequest();
+          await payTheRequest();
+          await registerEvent(eventId, payerAddress);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setIsProcessing(false);
+        }
       }}
     >
       Pay now

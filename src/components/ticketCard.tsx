@@ -23,7 +23,7 @@ function TicketCard({
   isActive: boolean;
   eventId: number;
 }) {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: walletClient, isError, isLoading } = useWalletClient();
 
   const [eventName, setEventName] = useState("");
@@ -161,6 +161,10 @@ function TicketCard({
         )}
         <button
           onClick={async () => {
+            if (!isConnected) {
+              toast.error("Please connect your wallet first!");
+              return;
+            }
             console.log("creating request");
             await createRequest(
               organizer as `0x${string}`,
@@ -185,11 +189,9 @@ function TicketCard({
               walletClient as WalletClient
             )
             toast.success("Request created successfully", {
-              position: 'bottom-right',
             });
             toast('Please pay in the next 48 hours!', {
               icon: '💵',
-              position: 'bottom-right',
             });
             console.log("request created");
           }}
