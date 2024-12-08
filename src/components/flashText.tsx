@@ -48,10 +48,10 @@ const FlashText = () => {
           }}
           aria-hidden="true"
         >
-          Ticket Center
+          REQUESTIX
         </span>{" "}
         {/* glitch::before */}
-        Ticket Center
+        REQUESTIX
         <span
           id="after-te1"
           className="absolute top-0 -left-0.5 w-full h-full bg-transparent"
@@ -61,7 +61,7 @@ const FlashText = () => {
           }}
           aria-hidden="true"
         >
-          Ticket Center
+          REQUESTIX
         </span>{" "}
         {/* glitch::after */}
       </h1>
